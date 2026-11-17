@@ -122,6 +122,8 @@
   networking.hostName = "octopi";
   time.timeZone = "Europe/Madrid";
 
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+
   # Static Ethernet address. Any wired interface gets 192.168.1.81/24.
   networking.networkmanager.ensureProfiles.profiles.eth-static = {
     connection = {
