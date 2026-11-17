@@ -14,7 +14,7 @@ in
     serviceConfig = {
       Type = "notify";
       ExecStart = "${pkgs.systemd}/bin/systemd-nspawn --quiet --keep-unit --boot --machine=octopi-buster --directory=/var/lib/machines/octopi-buster --private-users=no --bind=${printer}:/dev/ttyACM0";
-      DeviceAllow = [ "${printer} rw" ];
+      DeviceAllow = [ "/dev/ttyACM0 rw" ];
       KillMode = "mixed";
       Restart = "on-failure";
       TimeoutStopSec = "2min";
