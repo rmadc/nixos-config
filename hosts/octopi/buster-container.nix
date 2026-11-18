@@ -17,7 +17,7 @@ in
     fi
     exec ${pkgs.util-linux}/bin/nsenter -t "$leader" --mount --uts --ipc --net --pid --root --wd -- \
       /usr/bin/env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-      HOME=/root TERM="''${TERM:-xterm}" /bin/bash --noprofile --norc
+      TERM="''${TERM:-xterm}" /bin/su - pi
   '') ];
   systemd.services.octopi-buster = {
     description = "Debian Buster OctoPrint container";
