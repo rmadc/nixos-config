@@ -119,6 +119,8 @@
   # and migrated your data accordingly.
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+  security.sudo.extraConfig = "Defaults timestamp_timeout=60";
+
   virtualisation.docker.enable = true;
 
   networking.hostName = "octopi";
