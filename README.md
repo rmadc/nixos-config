@@ -25,31 +25,32 @@ owned by root.
 
 ## Update and deploy
 
-Review the latest commit and check that your checkout is clean before pulling.
-The existing `octopi` checkout is owned by root, so use:
-
-```sh
-sudo git -C /etc/nixos status --short --branch
-sudo git -C /etc/nixos pull --ff-only
-```
-
-Then review the pulled changes and deploy the checked-out revision:
+For example, on `octopi`, run:
 
 ```sh
 sudo /etc/nixos/scripts/deploy.sh
 ```
 
+The script checks that the checkout has no uncommitted or untracked changes,
+then pulls the current branch with `git pull --ff-only`. It stops if the pull
+fails. It prints the resulting commit and runs `nixos-rebuild switch`; the
+system is built before activation, and a failed build stops the deployment.
+Review upstream changes before running it because it deploys the latest commit
+on the current branch automatically.
+
 The script works out the repository location from its own path and selects the
 flake configuration using the machine's short hostname. For example, on
 `octopi` it deploys `nixosConfigurations.octopi`. Each machine needs a matching
-entry in `flake.nix`. The script refuses uncommitted or untracked changes,
-prints the revision, and runs `nixos-rebuild switch`; it builds the system
-before activation and stops if the build fails. It does not pull changes.
-
+entry in `flake.nix`. For a checkout elsewhere, use that checkout's script path.
 If the checkout has local changes or the pull cannot fast-forward, inspect and
-resolve that state before continuing. Deploying changes the running host; review
-the commit and its effects first. For a checkout elsewhere, use the path to
-that checkout's `scripts/deploy.sh` instead.
+resolve that state before continuing.
+
+When upgrading from a checkout that has the older script without automatic
+pulling, pull once manually before using the command above:
+
+```sh
+sudo git -C /etc/nixos pull --ff-only
+```
 
 ## Check what is running
 
