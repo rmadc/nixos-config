@@ -1,0 +1,5 @@
+SHELL=/bin/sh
+PATH=/usr/local/bin:/usr/bin:/bin
+* * * * * bot flock -w 50 /data/tg/telethon-session.lock python /app/run_job.py hb_status.py >> /data/logs/hb_status.cron.log 2>&1
+1 */3 * * * bot python /app/run_job.py moon_clock_TG.py >> /data/logs/moon_clock_TG.cron.log 2>&1
+2,32 * * * * bot flock -w 50 /data/tg/telethon-session.lock python /app/run_job.py mark_as_read.py >> /data/logs/mark_as_read.cron.log 2>&1
