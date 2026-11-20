@@ -148,7 +148,7 @@
 
   users.users.ra = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "dialout" ];
+    extraGroups = [ "wheel" "dialout" "docker" ];
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKyZXSfOC0RCsYHCKV8z5sQRSm6+RzgKjLX2351wSGv/ windows-to-octoprint" ];
   };
 
