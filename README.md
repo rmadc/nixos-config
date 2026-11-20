@@ -1,9 +1,9 @@
 # NixOS configuration
 
-This repository is the source for the `octopi` NixOS host. Its flake selects
-`hosts/octopi/configuration.nix`, which imports the hardware and Buster
-container modules and enables Docker and Compose. Commands below are run on the Pi unless
-otherwise stated.
+This repository can hold configurations for multiple NixOS hosts. The commands
+below use `octopi` as an example and are run on that Pi unless otherwise stated.
+Its flake entry selects `hosts/octopi/configuration.nix`, which imports the
+hardware and Buster container modules and enables Docker and Compose.
 
 ## First checkout
 
@@ -25,29 +25,31 @@ owned by root.
 
 ## Update and deploy
 
-Check for local changes before pulling:
+Review the latest commit and check that your checkout is clean before pulling.
+The existing `octopi` checkout is owned by root, so use:
 
 ```sh
 sudo git -C /etc/nixos status --short --branch
-```
-
-If the checkout is clean, retrieve the latest committed changes and build the
-configuration without activating it:
-
-```sh
 sudo git -C /etc/nixos pull --ff-only
-sudo nixos-rebuild build --flake /etc/nixos#octopi
 ```
 
-If the build succeeds, activate that configuration:
+Then review the pulled changes and deploy the checked-out revision:
 
 ```sh
-sudo nixos-rebuild switch --flake /etc/nixos#octopi
+sudo /etc/nixos/scripts/deploy.sh
 ```
+
+The script works out the repository location from its own path and selects the
+flake configuration using the machine's short hostname. For example, on
+`octopi` it deploys `nixosConfigurations.octopi`. Each machine needs a matching
+entry in `flake.nix`. The script refuses uncommitted or untracked changes,
+prints the revision, and runs `nixos-rebuild switch`; it builds the system
+before activation and stops if the build fails. It does not pull changes.
 
 If the checkout has local changes or the pull cannot fast-forward, inspect and
-resolve that state before continuing. `switch` changes the running host; review
-the commit and its effects before deploying it.
+resolve that state before continuing. Deploying changes the running host; review
+the commit and its effects first. For a checkout elsewhere, use the path to
+that checkout's `scripts/deploy.sh` instead.
 
 ## Check what is running
 
