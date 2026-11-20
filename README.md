@@ -1,8 +1,8 @@
 # NixOS configuration
 
 This repository is the source for the `octopi` NixOS host. Its flake selects
-`hosts/octopi/configuration.nix`, which imports the hardware, Buster container,
-and Docker configuration modules. Commands below are run on the Pi unless
+`hosts/octopi/configuration.nix`, which imports the hardware and Buster
+container modules and enables Docker and Compose. Commands below are run on the Pi unless
 otherwise stated.
 
 ## First checkout

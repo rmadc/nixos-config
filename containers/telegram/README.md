@@ -20,9 +20,8 @@ duplicate messages and compete for the same Telegram session.
 - `scripts/` contains copies of the three scripts with credentials, identifiers
   and writable paths supplied at runtime.
 
-`hosts/octopi/telegram-container.nix` defines an optional NixOS switch for
-installing the Docker daemon and Compose. The octopi configuration enables
-that switch; it does not start this Compose project. Docker's restart policy is
+`hosts/octopi/configuration.nix` enables Docker and installs Compose for the
+host. This does not start the Compose project. Docker's restart policy is
 distinct from a NixOS service for managing the Compose project.
 
 ## Volumes and secrets

@@ -9,7 +9,6 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./buster-container.nix
-      ./telegram-container.nix
     ];
 
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
@@ -120,7 +119,7 @@
   # and migrated your data accordingly.
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  services.octopiTelegramJobs.enable = true;
+  virtualisation.docker.enable = true;
 
   networking.hostName = "octopi";
   time.timeZone = "Europe/Madrid";
@@ -155,7 +154,7 @@
 
   users.users.root.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKyZXSfOC0RCsYHCKV8z5sQRSm6+RzgKjLX2351wSGv/ windows-to-octoprint" ];
 
-  environment.systemPackages = with pkgs; [ git vim ];
+  environment.systemPackages = with pkgs; [ git vim docker-compose ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 
