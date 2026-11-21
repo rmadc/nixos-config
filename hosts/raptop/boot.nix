@@ -29,6 +29,10 @@
         search --no-floppy --fs-uuid --set=root DA79-B56A
         chainloader /EFI/Microsoft/Boot/bootmgfw.efi
       }
+
+      menuentry "UEFI firmware settings" {
+        fwsetup
+      }
     '';
   };
 }
