@@ -8,6 +8,8 @@
     enable = true;
     efiSupport = true;
     device = "nodev";
+    # Keep the boot menu plain and remove the NixOS background image.
+    splashImage = null;
 
     # Ubuntu and Windows keep their bootloaders on the eMMC EFI partition.
     # Search by filesystem UUID so partition renumbering does not break them.
