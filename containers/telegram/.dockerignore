@@ -1,8 +1,6 @@
 *
 !Dockerfile
-!requirements.txt
-!crontab
 !entrypoint.sh
 !run_job.py
-!scripts/
-!scripts/*.py
+!jobs/
+!jobs/**

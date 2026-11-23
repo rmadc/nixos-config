@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/bin:/usr/bin:/bin
+JOB_NAME=hb-status
+* * * * * bot flock -w 50 /data/tg/hb-status-run.lock python /app/run_job.py >> /data/logs/hb_status.cron.log 2>&1

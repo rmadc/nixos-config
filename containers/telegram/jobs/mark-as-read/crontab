@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/bin:/usr/bin:/bin
+JOB_NAME=mark-as-read
+2,32 * * * * bot flock -w 50 /data/tg/mark-as-read-run.lock python /app/run_job.py >> /data/logs/mark_as_read.cron.log 2>&1

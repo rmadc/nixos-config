@@ -1,17 +1,44 @@
 name: telegram
 
 services:
-  jobs:
-    build: .
-    image: telegram-jobs:local
+  hb-status:
+    build:
+      context: .
+      args:
+        JOB: hb-status
+    image: telegram-hb-status:local
     restart: unless-stopped
     volumes:
       - TG-data:/data/tg
-      - TG-moon:/data/moon
       - TG-logs:/data/logs
     secrets:
       - settings
       - telegram-api
+  mark-as-read:
+    build:
+      context: .
+      args:
+        JOB: mark-as-read
+    image: telegram-mark-as-read:local
+    restart: unless-stopped
+    volumes:
+      - TG-data:/data/tg
+      - TG-logs:/data/logs
+    secrets:
+      - settings
+      - telegram-api
+  moon-clock:
+    build:
+      context: .
+      args:
+        JOB: moon-clock
+    image: telegram-moon-clock:local
+    restart: unless-stopped
+    volumes:
+      - TG-moon:/data/moon
+      - TG-logs:/data/logs
+    secrets:
+      - settings
       - moon-token
 
 volumes:
