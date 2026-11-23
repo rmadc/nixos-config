@@ -69,7 +69,6 @@ alone.
 ## Containers
 
 The Buster installation runs as the `octopi-buster` systemd-nspawn service.
-The Docker and Compose configuration is declarative; the Telegram Compose
-project remains a draft and does not start automatically when NixOS is
-rebuilt. See [the Telegram draft README](containers/telegram/README.md) for
-its files, volumes, secrets and outstanding validation before cutover.
+NixOS enables Docker, while the Telegram jobs are managed separately with
+Docker Compose. See [the Telegram README](containers/telegram/README.md) for
+its files, volumes, secrets and operational notes.

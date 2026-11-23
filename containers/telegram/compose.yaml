@@ -1,23 +1,26 @@
-name: octopi-telegram
+name: telegram
 
 services:
-  telegram-jobs:
+  jobs:
     build: .
-    image: octopi-telegram-jobs:local
+    image: telegram-jobs:local
     restart: unless-stopped
     volumes:
-      - telegram-data:/data/tg
-      - moon-data:/data/moon
-      - job-logs:/data/logs
+      - TG-data:/data/tg
+      - TG-moon:/data/moon
+      - TG-logs:/data/logs
     secrets:
       - settings
       - telegram-api
       - moon-token
 
 volumes:
-  telegram-data:
-  moon-data:
-  job-logs:
+  TG-data:
+    name: TG-data
+  TG-moon:
+    name: TG-moon
+  TG-logs:
+    name: TG-logs
 
 secrets:
   settings:

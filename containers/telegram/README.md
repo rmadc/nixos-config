@@ -1,9 +1,9 @@
-# Telegram jobs: Docker Compose draft
+# Telegram jobs: Docker Compose
 
-This is an untested learning draft. Buster still runs the jobs. Do not start
-the Compose service until the existing cron entries have been stopped and a
-controlled migration of the data has been planned. Two schedulers can send
-duplicate messages and compete for the same Telegram session.
+The three scheduled jobs run together in a Docker Compose service. Their
+previous Buster cron entries were stopped during migration; never run both
+schedulers at once, since they can duplicate messages and compete for the same
+Telegram session. Check the live system before making changes.
 
 ## What each file does
 
@@ -11,7 +11,7 @@ duplicate messages and compete for the same Telegram session.
 - `Dockerfile` builds the image from Python 3.11 and the cron package.
 - `requirements.txt` pins the four direct Python dependencies to the versions
   currently used in Buster; transitive dependencies and the base image digest
-  are not yet pinned. The ARM64 build of `pyswisseph` is unverified.
+  are not yet pinned. The ARM64 image was built and its imports tested.
 - `crontab` preserves the existing schedules in the Europe/Madrid timezone and
   locks the shared Telethon session to prevent the two jobs overlapping.
 - `entrypoint.sh` checks required files, changes ownership of the three volume
@@ -26,12 +26,12 @@ distinct from a NixOS service for managing the Compose project.
 
 ## Volumes and secrets
 
-Compose creates three Docker-managed named volumes: `telegram-data` for the
-Telethon session and its state, `moon-data` for the moon state and ephemeris
-file, and `job-logs` for cron output. Docker prefixes their names with the
-Compose project name, here `octopi-telegram`. They persist if the container is
-removed. **Do not use `docker compose down --volumes`** unless you intend to
-delete that persisted data.
+Compose project `telegram` uses three Docker-managed named volumes: `TG-data`
+for the Telethon session and its state, `TG-moon` for the moon state and
+ephemeris file, and `TG-logs` for cron output. Their explicit names are not
+prefixed by the project name. They persist if the container is removed.
+**Do not use `docker compose down --volumes`** unless you intend to delete that
+persisted data.
 
 The three Compose secrets originate from these host files:
 
@@ -55,29 +55,23 @@ the mounted secret files. Set suitable host ownership and restrictive modes;
 Compose cannot remap ownership or mode for file-backed secrets. Verify access
 before enabling the jobs.
 
-The volumes must be populated before startup. `telegram-data` needs
-`session_name.session` and `hb_status.state`; `moon-data` needs
+The volumes must be populated before startup. `TG-data` needs
+`session_name.session` and `hb_status.state`; `TG-moon` needs
 `moon_clock_TG_state.json` and `semo_18.se1`. Preserve the originals. Copy the
 SQLite session only after the old jobs have stopped and no process has it open.
 The entrypoint refuses to start if any of these files or secrets are missing or
 unreadable. It changes only each volume root's ownership to UID/GID 1000, so
-copied files must also be readable and writable by that user. `job-logs` needs
+copied files must also be readable and writable by that user. `TG-logs` needs
 a log rotation and monitoring plan.
 
-## Commands for later review
-
-These are **not executed by this draft phase**. They assume this repository
-and the Docker configuration have already been made available on the Pi.
+## Inspect the service
 
 ```sh
 cd /etc/nixos/containers/telegram
-sudo docker compose config   # Inspect the resolved configuration; no start.
-sudo docker compose build    # Build the ARM64 image; does not start jobs.
+docker compose ps
+docker compose logs --tail=30
 ```
 
-Do not run `docker compose up` until secrets and volumes are prepared, the
-image has been validated, and the Buster jobs have been stopped as part of an
-agreed cutover. The safe data-copy, validation, cutover and rollback commands
-still need to be designed and reviewed. Restarting the Pi or the container has
-not been tested. The Docker service itself also needs to be enabled through a
-reviewed NixOS deployment before the Compose commands will work on the Pi.
+Cron output is stored in `TG-logs`; application logs are also stored in
+`TG-data`. Log rotation and monitoring need to be arranged. The moon bot's
+scheduled Telegram send and recovery after a Pi reboot still need verification.
