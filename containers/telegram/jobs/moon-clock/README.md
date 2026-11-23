@@ -6,4 +6,4 @@
   `/data/moon/semo_18.se1`.
 - State: `/data/moon/moon_clock_TG_state.json`.
 - Effects: sends moon-position messages and may delete old messages.
-- Cron output: `/data/logs/moon_clock_TG.cron.log`.
+- Operational output: stdout/stderr, collected by Docker.

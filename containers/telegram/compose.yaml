@@ -8,9 +8,13 @@ services:
         JOB: hb-status
     image: telegram-hb-status:local
     restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: '3'
     volumes:
-      - TG-data:/data/tg
-      - TG-logs:/data/logs
+      - TG-hb-status:/data/tg
     secrets:
       - settings
       - telegram-api
@@ -21,9 +25,13 @@ services:
         JOB: mark-as-read
     image: telegram-mark-as-read:local
     restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: '3'
     volumes:
-      - TG-data:/data/tg
-      - TG-logs:/data/logs
+      - TG-mark-as-read:/data/tg
     secrets:
       - settings
       - telegram-api
@@ -34,20 +42,24 @@ services:
         JOB: moon-clock
     image: telegram-moon-clock:local
     restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: '3'
     volumes:
-      - TG-moon:/data/moon
-      - TG-logs:/data/logs
+      - TG-moon-clock:/data/moon
     secrets:
       - settings
       - moon-token
 
 volumes:
-  TG-data:
-    name: TG-data
-  TG-moon:
-    name: TG-moon
-  TG-logs:
-    name: TG-logs
+  TG-hb-status:
+    name: TG-hb-status
+  TG-mark-as-read:
+    name: TG-mark-as-read
+  TG-moon-clock:
+    name: TG-moon-clock
 
 secrets:
   settings:

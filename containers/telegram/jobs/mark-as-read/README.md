@@ -5,7 +5,7 @@
 - Inputs: `/run/secrets/telegram-api`, chat settings in the settings secret,
   and `/data/tg/mark-as-read.session`, a separately authorized Telegram login.
 - Effects: marks the latest message in the configured chats as read.
-- Output: `/data/tg/mark_as_read.log` and `/data/logs/mark_as_read.cron.log`.
+- Operational output: stdout/stderr, collected by Docker.
 
 A per-job lock prevents overlapping instances of this job. The session is for
 the same account as hb-status, but uses a separate Telegram authorization.

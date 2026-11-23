@@ -17,18 +17,27 @@ input/output documentation. Each service is built separately with its own
 
 ## Data and secrets
 
-- `TG-data`: existing status history, state, logs and both Telethon sessions.
-  `session_name.session` is for hb-status; `mark-as-read.session` is a separate
-  login to the same Telegram account. Both session files are credentials.
-- `TG-moon`: moon state and ephemeris data.
-- `TG-logs`: scheduled-job output. Rotation and monitoring are not yet set up.
+- `TG-hb-status`: the hb-status Telegram session, state and `hb_status.log`
+  result history.
+- `TG-mark-as-read`: its separate Telethon session for the same account.
+- `TG-moon-clock`: moon state and ephemeris data.
 - `/var/lib/telegram-jobs/secrets/`: file-backed Compose secrets, stored on the
-  host rather than in the repository or image. File-backed Compose secrets are
-  bind mounts, not Swarm's encrypted secret store. The bot runs as UID 1000.
+  host rather than in the repository or image. The bot runs as UID 1000.
 
-The images and container filesystems are replaceable; these named volumes and
-host secret files hold persistent data. Do not remove volumes during a normal
-Compose shutdown. Avoid running old and new schedulers at the same time.
+Each job mounts only its own data volume. Session files are credentials. Compose
+file-backed secrets are bind mounts, not Swarm's encrypted secret store. The
+images and container filesystems are replaceable; the named volumes and host
+secret files hold persistent data. Never remove volumes during a normal Compose
+shutdown. The previous TG-data, TG-moon and TG-logs volumes contain historical
+copies and should be retained until the migration is verified and backed up.
+
+## Operational logs
+
+The scheduler forwards each job's stdout and stderr to its container's Docker
+logs. Compose uses the Docker `local` logging driver with a 10 MB limit per
+file and three rotated files per container. `hb_status.log` is application
+result data and remains in `TG-hb-status`; historical pre-migration logs
+remain in the old volumes. Docker-managed logs are not application backups.
 
 ## Inspect
 
@@ -38,7 +47,5 @@ docker compose ps -a
 docker compose logs --tail=30
 ```
 
-Cron output currently goes to files in `TG-logs`; application history and logs
-also exist in `TG-data`. Moving operational output to stdout/stderr with
-rotation is separate follow-up work. The moon bot's scheduled Telegram send and
-Pi reboot recovery still need verification.
+Use `docker compose logs -f <service>` to follow a job's output. The moon bot's
+scheduled Telegram send and Pi reboot recovery still need verification.

@@ -1,10 +1,6 @@
 #!/bin/sh
 set -eu
 
-for path in /data/logs; do
-  [ -d "$path" ] || { echo "Missing required mount: $path" >&2; exit 1; }
-  chown 1000:1000 "$path"
-done
 
 case "$JOB_NAME" in
   hb-status)
@@ -29,4 +25,13 @@ for path in $required; do
     exit 1
   }
 done
+# Cron jobs run as bot, so use writable FIFOs to forward their output to
+# Docker's stdout/stderr without giving the bot access to PID 1's file handles.
+mkdir -p /run/telegram-logs
+rm -f /run/telegram-logs/stdout /run/telegram-logs/stderr
+mkfifo -m 0622 /run/telegram-logs/stdout /run/telegram-logs/stderr
+exec 3<>/run/telegram-logs/stdout
+exec 4<>/run/telegram-logs/stderr
+cat <&3 >&1 &
+cat <&4 >&2 &
 exec cron -f

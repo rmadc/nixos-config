@@ -11,12 +11,10 @@ from telethon.sync import TelegramClient
 BASE_DIR = Path(os.environ["TG_DATA_DIR"])
 CREDENTIALS_FILE = Path(os.environ["TG_CREDENTIALS_FILE"])
 SESSION_PATH = str(BASE_DIR / "mark-as-read")
-LOG_FILE = BASE_DIR / "mark_as_read.log"
 BARCELONA_GROUP = os.environ["TG_BARCELONA_GROUP"]
 MOON_CHANNEL = os.environ["TG_MOON_CHANNEL"]
 
 logging.basicConfig(
-    filename=str(LOG_FILE),
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
 )
