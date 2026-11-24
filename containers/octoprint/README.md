@@ -12,3 +12,12 @@ host device names and the device rule permits ACM devices, not only one printer.
 
 The Buster container no longer owns the printer or serves OctoPrint. Its old
 HAProxy service is disabled; the official image serves HTTP on port 80.
+
+## Migration notes
+
+- Buster had a custom `OctoPrint-PiLink` / "Pi Music Link" plugin (version
+  0.1.0), described as a navbar shortcut to a local multiroom coordinator.
+  It was not installed in Docker. Investigate the multiroom services separately
+  before deciding whether a shortcut is still useful. The previously identified
+  dashboard address was `http://octoprint:32125`; it did not respond during the
+  migration check on 2026-11-24. This does not establish why it was unavailable.
