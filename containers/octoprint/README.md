@@ -10,6 +10,5 @@ to USB ACM serial devices (major 166). In OctoPrint, the printer's additional
 serial port is its stable `/host-dev/serial/by-id/` path. This mount exposes
 host device names and the device rule permits ACM devices, not only one printer.
 
-The Buster container no longer owns the printer. Its HAProxy still serves HTTPS
-on port 443 and forwards OctoPrint requests to port 80; the old webcam routes
-remain in place.
+The Buster container no longer owns the printer or serves OctoPrint. Its old
+HAProxy service is disabled; the official image serves HTTP on port 80.
