@@ -1,0 +1,13 @@
+name: dockgraph
+
+services:
+  dockgraph:
+    image: dockgraph/dockgraph:0.5.0
+    ports:
+      - "127.0.0.1:7800:7800"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/nixos/containers:/compose:ro
+    labels:
+      dockgraph.self: "true"
+    restart: unless-stopped

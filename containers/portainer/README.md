@@ -24,8 +24,16 @@ docker compose -f /etc/nixos/containers/portainer/compose.yaml up -d
 ## First login
 
 Open the UI and create the admin user within about 5 minutes of the first
-start; Portainer locks itself after that. If it locks, restart it
-(`docker restart portainer-portainer-1`) and try again.
+start; Portainer locks itself after that. The form asks for a setup token,
+which changes on every start:
+
+```sh
+docker logs portainer-portainer-1 2>&1 | grep setup_token
+```
+
+If the window locks, restart it (`docker restart portainer-portainer-1`),
+fetch the new token and try again. Leave "Edge Compute" off; it is for
+managing fleets of remote hosts.
 
 ## Compose and Portainer
 
