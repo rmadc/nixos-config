@@ -77,3 +77,4 @@ after boot via Docker's `unless-stopped` policy.
 - [Octopi operations, migration and recovery](docs/octopi-operations.md)
 - [OctoPrint Compose and migration notes](containers/octoprint/README.md)
 - [Telegram jobs, data and secrets](containers/telegram/README.md)
+- [Portainer web UI for Docker](containers/portainer/README.md)

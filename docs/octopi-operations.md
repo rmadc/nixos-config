@@ -29,8 +29,9 @@ verify that path and the backup image location before relying on either.
 | Buster | `hosts/octopi/buster-container.nix` | NixOS `octopi-buster.service`; rootfs at `/var/lib/machines/octopi-buster`. |
 | OctoPrint | `containers/octoprint/compose.primary.yaml` | Official `octoprint/octoprint:1.11.8`, HTTP port 80, `octoprint-data` volume. |
 | Telegram jobs | `containers/telegram/compose.yaml` | Three separately built services: `hb-status`, `mark-as-read`, `moon-clock`. |
+| Portainer | `containers/portainer/compose.yaml` | `portainer/portainer-ce:lts`, HTTPS UI on port 9443 (LAN), `portainer-data` volume. Needs the NixOS firewall rule. |
 
-Docker and Buster's systemd unit are enabled at boot. The four Docker
+Docker and Buster's systemd unit are enabled at boot. The five Docker
 containers use `restart: unless-stopped`; Docker restarts existing containers,
 but does not automatically create them from Git on a fresh host. A manually
 stopped container can remain stopped. NixOS deploys do not apply Compose edits.
