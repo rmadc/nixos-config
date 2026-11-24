@@ -1,0 +1,17 @@
+name: octoprint
+
+services:
+  octoprint:
+    image: octoprint/octoprint:1.11.8
+    ports:
+      - "80:80"
+    volumes:
+      - octoprint-data:/octoprint
+      - /dev:/host-dev:ro
+    device_cgroup_rules:
+      - "c 166:* rw"
+    restart: unless-stopped
+
+volumes:
+  octoprint-data:
+    name: octoprint-data
