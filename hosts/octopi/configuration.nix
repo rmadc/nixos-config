@@ -153,7 +153,6 @@
     extraGroups = [ "wheel" "dialout" "docker" ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKyZXSfOC0RCsYHCKV8z5sQRSm6+RzgKjLX2351wSGv/ windows-to-octoprint"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXETeDzmQ16NBCf96Mhxz9BFiS9QMDJ0mEXB3PPPSsf remote-docker"
     ];
   };
 
