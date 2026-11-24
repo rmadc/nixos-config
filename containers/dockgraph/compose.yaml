@@ -5,17 +5,9 @@ services:
     image: dockgraph/dockgraph:0.5.0
     ports:
       - "7800:7800"
-    environment:
-      DG_PASSWORD_FILE: /run/secrets/dockgraph-password
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/nixos/containers:/compose:ro
     labels:
       dockgraph.self: "true"
-    secrets:
-      - dockgraph-password
     restart: unless-stopped
-
-secrets:
-  dockgraph-password:
-    file: /var/lib/dockgraph/password
