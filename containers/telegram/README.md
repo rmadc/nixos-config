@@ -1,8 +1,9 @@
 # Scheduled Telegram jobs
 
 This Compose project contains three independent services, images, schedules and
-job directories. Docker is enabled by the host NixOS configuration. The jobs
-continue to use the same pinned package versions as the previous single image.
+job directories. Docker is enabled by the host NixOS configuration. Python
+dependencies are pinned separately for each job; consult their requirements
+files for the current versions.
 
 | Service | Schedule (Europe/Madrid) | Purpose |
 | --- | --- | --- |
@@ -48,4 +49,5 @@ docker compose logs --tail=30
 ```
 
 Use `docker compose logs -f <service>` to follow a job's output. The moon bot's
-scheduled Telegram send and Pi reboot recovery still need verification.
+message cleanup limitations and reboot verification are tracked in the
+[operations handoff](../../docs/octopi-operations.md).

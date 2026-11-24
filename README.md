@@ -69,6 +69,11 @@ alone.
 ## Containers
 
 The Buster installation runs as the `octopi-buster` systemd-nspawn service.
-NixOS enables Docker, while the Telegram jobs are managed separately with
-Docker Compose. See [the Telegram README](containers/telegram/README.md) for
-its files, volumes, secrets and operational notes.
+NixOS enables Docker; OctoPrint and the Telegram jobs are managed separately
+with Docker Compose. `deploy.sh` pulls and applies NixOS configuration only:
+it does **not** build or apply either Compose project. Existing containers start
+after boot via Docker's `unless-stopped` policy.
+
+- [Octopi operations, migration and recovery](docs/octopi-operations.md)
+- [OctoPrint Compose and migration notes](containers/octoprint/README.md)
+- [Telegram jobs, data and secrets](containers/telegram/README.md)
