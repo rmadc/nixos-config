@@ -3,25 +3,29 @@
 Live graph of the Pi's containers, networks, volumes and mounts. It only
 observes; it does not start, stop or change containers. License: BSL-1.1.
 
-- **Access:** the port is published on the Pi's loopback only
-  (`127.0.0.1:7800`), so the LAN cannot reach it and no NixOS firewall rule
-  or password is needed. From Windows, open an SSH tunnel and browse to
-  `http://localhost:7800`:
+- **Access:** `http://192.168.1.81:7800` on the LAN, behind a password. The
+  UI is plain HTTP, so the password crosses the LAN unencrypted.
+- **Firewall:** `hosts/octopi/configuration.nix` opens TCP 7800. Apply it
+  with `sudo /etc/nixos/scripts/deploy.sh`.
+- **Password:** read from `/var/lib/dockgraph/password` (a file-backed Compose
+  secret, same pattern as the Telegram jobs). The file is not in Git. Create
+  it once on the Pi:
 
   ```sh
-  ssh -L 7800:127.0.0.1:7800 octoprint
+  sudo install -d -m 700 /var/lib/dockgraph
+  sudo sh -c 'umask 022; read -r -s -p "Password: " p; echo; printf %s "$p" > /var/lib/dockgraph/password'
   ```
 
-- **Why not the LAN:** the detail panels show container environment
-  variables and labels. To publish on the LAN, change the port mapping to
-  `"7800:7800"`, set `DG_PASSWORD_FILE` (see the upstream README), and open
-  TCP 7800 in `hosts/octopi/configuration.nix`.
+  The file is world-readable (0644) inside a root-only directory so the
+  container user can read it; only root can enter the directory.
+- **Why a password:** the detail panels show container environment variables
+  and labels.
 - **Compose files:** `/etc/nixos/containers` is mounted read-only. DockGraph
   scans it for `.yml`/`.yaml` files and shows services that are defined but
   not running.
-- **Docker socket:** mounted read-only. The socket API is still sensitive;
-  read-only on the mount does not restrict what the Docker API reports.
-- **Data:** none. There is no volume.
+- **Docker socket:** mounted read-only, but the Docker API behind it is still
+  sensitive. Keep the UI on the LAN.
+- **Data:** none apart from the password file. There is no volume.
 - **Start on boot:** `restart: unless-stopped`; not created from Git by NixOS.
 - **Image:** pinned to `0.5.0` (multi-arch, includes arm64). The project is
   young (first commit 2026-03); review releases before bumping.

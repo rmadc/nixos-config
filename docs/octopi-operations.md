@@ -30,7 +30,7 @@ verify that path and the backup image location before relying on either.
 | OctoPrint | `containers/octoprint/compose.primary.yaml` | Official `octoprint/octoprint:1.11.8`, HTTP port 80, `octoprint-data` volume. |
 | Telegram jobs | `containers/telegram/compose.yaml` | Three separately built services: `hb-status`, `mark-as-read`, `moon-clock`. |
 | Portainer | `containers/portainer/compose.yaml` | `portainer/portainer-ce:lts`, HTTPS UI on port 9443 (LAN), `portainer-data` volume. Needs the NixOS firewall rule. Deployed and running; the admin user was created in the UI on 2026-11-24. |
-| DockGraph | `containers/dockgraph/compose.yaml` | `dockgraph/dockgraph:0.5.0`, read-only topology viewer on Pi loopback port 7800 (SSH tunnel), no volume. |
+| DockGraph | `containers/dockgraph/compose.yaml` | `dockgraph/dockgraph:0.5.0`, read-only topology viewer, LAN port 7800 with password from `/var/lib/dockgraph/password`, no volume. Needs the NixOS firewall rule. |
 
 Docker and Buster's systemd unit are enabled at boot. The six Docker
 containers use `restart: unless-stopped`; Docker restarts existing containers,

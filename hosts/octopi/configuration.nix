@@ -127,7 +127,8 @@
   time.timeZone = "Europe/Madrid";
 
   # 9443: Portainer web UI (containers/portainer/compose.yaml).
-  networking.firewall.allowedTCPPorts = [ 80 443 2222 9443 ];
+  # 7800: DockGraph web UI (containers/dockgraph/compose.yaml).
+  networking.firewall.allowedTCPPorts = [ 80 443 2222 9443 7800 ];
 
   # Static Ethernet address. Any wired interface gets 192.168.1.81/24.
   networking.networkmanager.ensureProfiles.profiles.eth-static = {
