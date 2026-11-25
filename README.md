@@ -23,6 +23,32 @@ The current `octopi` already has the repository checked out at `/etc/nixos`;
 do not clone it again. Git commands below use `sudo` because that checkout is
 owned by root.
 
+## Adopt the checkout on raptop
+
+`raptop` still has the installer-generated files in `/etc/nixos`. They are older
+than this repository's configuration: they select systemd-boot instead of GRUB,
+so do not rebuild the system from them. Run this once, on `raptop`.
+
+Move the old directory aside and clone the repository:
+
+```sh
+sudo mv /etc/nixos /etc/nixos.pre-flake
+sudo git clone https://github.com/rmadc/nixos-config.git /etc/nixos
+```
+
+Build and preview without activating. Run the build outside the checkout: it
+creates a `result` link in the current directory.
+
+```sh
+cd /tmp
+sudo nixos-rebuild build --flake /etc/nixos#raptop
+nix store diff-closures /run/current-system ./result
+sudo nixos-rebuild dry-activate --flake /etc/nixos#raptop
+```
+
+After reviewing the output, deploy with the script described below. Keep
+`/etc/nixos.pre-flake` until the deployed system has survived a reboot.
+
 ## Update and deploy
 
 For example, on `octopi`, run:

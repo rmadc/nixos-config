@@ -1,0 +1,2 @@
+# Files are used on Linux hosts. Keep LF endings, also in Windows checkouts.
+* text=auto eol=lf
