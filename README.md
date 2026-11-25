@@ -5,6 +5,30 @@ below use `octopi` as an example and are run on that Pi unless otherwise stated.
 Its flake entry selects `hosts/octopi/configuration.nix`, which imports the
 hardware and Buster container modules and enables Docker and Compose.
 
+## Layout and shared settings
+
+| Path | Contents |
+| --- | --- |
+| `flake.nix` | One `nixosConfigurations` entry per host |
+| `modules/common.nix` | Settings shared by all hosts |
+| `hosts/<name>/` | Host configuration, including its hardware configuration |
+| `containers/` | Docker Compose projects, applied separately from NixOS |
+
+Each host's `configuration.nix` imports `../../modules/common.nix`. It sets the
+time zone, enables NetworkManager, SSH and flakes, and installs Git.
+
+- Put a setting in `modules/common.nix` only if every host should have it. A
+  change there affects all hosts, so preview each one before deploying it.
+- Keep users, SSH keys, sudo rules, boot loader, firewall, network profiles,
+  hardware settings and `system.stateVersion` in the host's directory.
+- NixOS merges lists such as `environment.systemPackages`: a host adds its own
+  packages without repeating the shared ones.
+- A new host needs its directory, the shared import and a `flake.nix` entry.
+
+`raptop` also enables compressed swap in RAM (`zramSwap.enable`). It gives
+headroom during memory peaks but adds no physical memory. Check it with
+`swapon --show` or `zramctl`.
+
 ## First checkout
 
 On a host where `/etc/nixos` does **not** already exist, clone the repository:
@@ -25,11 +49,10 @@ owned by root.
 
 ## Adopt the checkout on raptop
 
-`raptop` adopted the checkout on 2026-11-25. Its installer-generated files are
-kept in `/etc/nixos.pre-flake`. They are older than this repository's
-configuration: they select systemd-boot instead of GRUB, so do not rebuild the
-system from them. The steps below record the one-time adoption, for reference or
-for a similar host. Do not repeat them on `raptop`.
+Use this once on a host whose `/etc/nixos` still holds the installer-generated
+files. Do not rebuild from those files after switching to this repository: they
+may select a different bootloader. Skip this section if `/etc/nixos` is already
+a Git checkout.
 
 Move the old directory aside and clone the repository:
 
@@ -48,8 +71,9 @@ nix store diff-closures /run/current-system ./result
 sudo nixos-rebuild dry-activate --flake /etc/nixos#raptop
 ```
 
-After reviewing the output, deploy with the script described below. Keep
-`/etc/nixos.pre-flake` until the deployed system has survived a reboot.
+After reviewing the output, deploy with the script described below. Keep the
+`/etc/nixos.pre-flake` backup until the deployed system has survived a reboot.
+Then it can be deleted.
 
 ## Update and deploy
 
