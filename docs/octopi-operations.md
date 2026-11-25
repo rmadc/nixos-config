@@ -1,6 +1,6 @@
 # Octopi operations and migration handoff
 
-This records the observed setup on 2026-11-24. Runtime state can change; inspect
+This records the observed setup as of 2026-11-25. Runtime state can change; inspect
 the host before acting. Never overwrite the original OctoPrint SD card, its
 backup image, or the extracted root filesystem archive. The original archive
 was identified as `D:\SD-images\octopi-rootfs_69eed6d7.tar.xz` on INTELi7;
@@ -55,10 +55,13 @@ commands may recreate containers: do not do that during a print. Never use
 
 The official image tag is `1.11.8`; the inspected image used Python 3.10.18,
 which is upstream end-of-life. An image tag can be republished, so a tag alone
-does not guarantee an identical future image. The old experimental custom 2.x
-image was not the deployed service. A successful Cura print and printer
-power-off/power-on reconnect were observed; a full Pi reboot with the printer
-off still needs testing. Webcam setup is deferred.
+does not guarantee an identical future image. The experimental custom image and
+OctoPrint 2.x lab image were not the deployed service. A successful Cura print and printer
+power-off/power-on reconnect were observed. On 2026-11-24 the Pi rebooted with
+the printer off: Buster and the OctoPrint and three Telegram containers
+started, OctoPrint responded on HTTP, and the printer connected after it was
+powered on. Portainer and DockGraph were added after that reboot; their startup
+after a reboot has not been verified. Webcam setup is deferred.
 
 The original Buster settings and profiles were copied into
 `octoprint-data` at `/octoprint/octoprint`; uploads, generated web assets and
@@ -95,8 +98,8 @@ The Compose definitions and job scripts are in Git; the files under
 separate authorizations for the same Telegram account. `TG-hb-status` includes
 `hb_status.log`, which is application result history; operational logs go to
 Docker. The old volumes `TG-data`, `TG-moon`, `TG-logs` and earlier
-`octopi-telegram_*` volumes may contain historical copies: inspect and back up
-before deleting any of them.
+`octopi-telegram_*` volumes were removed during cleanup after containing
+historical copies of data, logs and sessions. Do not assume those copies remain.
 
 The moon job tracks messages in its state and deletes selected tracked messages
 between 36 and 48 hours old, intentionally retaining some representatives.
@@ -132,8 +135,14 @@ audio services separate from the OctoPrint container.
 A built-in OctoPrint backup made from Buster for migration comparison is at
 `/home/pi/octoprint-comparison-20261124.zip` inside Buster, with uploads and
 timelapses excluded. Comparison found all 29 backed-up files in the copied
-Docker data, though some runtime files subsequently changed. Temporary
-OctoPrint test containers, images or volumes may remain; inspect before cleanup.
+Docker data, though some runtime files subsequently changed.
+
+On 2026-11-25 the Docker inventory contained only the six running containers
+listed above, their six images, the five named volumes `TG-hb-status`,
+`TG-mark-as-read`, `TG-moon-clock`, `octoprint-data`, and `portainer-data`,
+and the default and active project networks. The stopped test containers and
+their old volumes and images had been removed. Inspect live state before
+assuming this remains current; build cache is separate from these objects.
 
 ## Backups and fresh-host recovery
 
@@ -144,6 +153,8 @@ off-device backups of:
   `/var/lib/machines/octopi-buster` and any changes made after extraction.
 - `octoprint-data` and all required `TG-*` named volumes, including historical
   result data and Telethon session files. Container images are not backups.
+- `portainer-data`, if the Portainer configuration and admin account should be
+  restored rather than set up again.
 - `/var/lib/telegram-jobs/secrets/`, SSH private keys and other credentials;
   store them securely outside Git. Session files are credentials too.
 
