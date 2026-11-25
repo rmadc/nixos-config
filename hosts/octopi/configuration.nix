@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./buster-container.nix
+      ../../modules/common.nix
     ];
 
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
@@ -17,9 +18,6 @@
   boot.loader.generic-extlinux-compatible.enable = true;
 
   # networking.hostName = "nixos"; # Define your hostname.
-
-  # Configure network connections interactively with nmcli or nmtui.
-  networking.networkmanager.enable = true;
 
   # Set your time zone.
   # time.timeZone = "Europe/Amsterdam";
@@ -124,7 +122,6 @@
   virtualisation.docker.enable = true;
 
   networking.hostName = "octopi";
-  time.timeZone = "Europe/Madrid";
 
   # 9443: Portainer web UI (containers/portainer/compose.yaml).
   # 7800: DockGraph web UI (containers/dockgraph/compose.yaml).
@@ -147,7 +144,6 @@
     ipv6.method = "auto";
   };
 
-  services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "prohibit-password";
 
   users.users.ra = {
@@ -160,8 +156,7 @@
 
   users.users.root.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKyZXSfOC0RCsYHCKV8z5sQRSm6+RzgKjLX2351wSGv/ windows-to-octoprint" ];
 
-  environment.systemPackages = with pkgs; [ git vim docker-compose ];
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  environment.systemPackages = with pkgs; [ vim docker-compose ];
 
 
   system.stateVersion = "26.05"; # Did you read the comment?
