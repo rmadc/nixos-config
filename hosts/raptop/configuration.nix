@@ -56,6 +56,14 @@
     packages = with pkgs; [];
   };
 
+  # Ubuntu root partition (nvme0n1p3), mounted for extra space. It holds the
+  # Ubuntu installation, so keep NixOS data in its own directory there.
+  fileSystems."/mnt/ubuntu" = {
+    device = "/dev/disk/by-uuid/77b85b41-e54b-40bb-a4ac-a42a879e1cca";
+    fsType = "ext4";
+    options = [ "nofail" ];
+  };
+
   # Allow this Windows computer to log in as ra using its SSH key.
   users.users.ra.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHh7HhicfejqPH0IyGoOwO/YnDevmpeRQ40frTn9Aysg codex-nixostop"
