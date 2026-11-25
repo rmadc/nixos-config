@@ -25,9 +25,11 @@ owned by root.
 
 ## Adopt the checkout on raptop
 
-`raptop` still has the installer-generated files in `/etc/nixos`. They are older
-than this repository's configuration: they select systemd-boot instead of GRUB,
-so do not rebuild the system from them. Run this once, on `raptop`.
+`raptop` adopted the checkout on 2026-11-25. Its installer-generated files are
+kept in `/etc/nixos.pre-flake`. They are older than this repository's
+configuration: they select systemd-boot instead of GRUB, so do not rebuild the
+system from them. The steps below record the one-time adoption, for reference or
+for a similar host. Do not repeat them on `raptop`.
 
 Move the old directory aside and clone the repository:
 
