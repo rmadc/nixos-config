@@ -98,6 +98,9 @@
 
   # List services that you want to enable:
 
+  # Compressed swap in RAM, to absorb memory peaks.
+  zramSwap.enable = true;
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
