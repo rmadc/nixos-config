@@ -1,8 +1,8 @@
 # OctoPrint
 
 The primary instance uses the official 1.11.8 image and the `octoprint-data`
-Docker volume. From this directory, run `docker compose -f compose.primary.yaml
-up -d` to apply the configuration. Docker restarts the container after boot.
+Docker volume. From this directory, run `docker compose up -d` to apply the
+configuration. Docker restarts the container after boot.
 This Compose project is not applied by the NixOS deployment script. See the
 [operations handoff](../../docs/octopi-operations.md) for data, plugins,
 recovery dependencies and outstanding tests.

@@ -27,7 +27,7 @@ verify that path and the backup image location before relying on either.
 | Component | Definition | Startup and operational state |
 | --- | --- | --- |
 | Buster | `hosts/octopi/buster-container.nix` | NixOS `octopi-buster.service`; rootfs at `/var/lib/machines/octopi-buster`. |
-| OctoPrint | `containers/octoprint/compose.primary.yaml` | Official `octoprint/octoprint:1.11.8`, HTTP port 80, `octoprint-data` volume. |
+| OctoPrint | `containers/octoprint/compose.yaml` | Official `octoprint/octoprint:1.11.8`, HTTP port 80, `octoprint-data` volume. |
 | Telegram jobs | `containers/telegram/compose.yaml` | Three separately built services: `hb-status`, `mark-as-read`, `moon-clock`. |
 | Portainer | `containers/portainer/compose.yaml` | `portainer/portainer-ce:lts`, HTTPS UI on port 9443 (LAN), `portainer-data` volume. Needs the NixOS firewall rule. Deployed and running; the admin user was created in the UI on 2026-11-24. |
 | DockGraph | `containers/dockgraph/compose.yaml` | `dockgraph/dockgraph:0.5.0`, read-only topology viewer, LAN port 7800, no password (home-lab choice), no volume. Needs the NixOS firewall rule. |
@@ -41,13 +41,13 @@ stopped container can remain stopped. NixOS deploys do not apply Compose edits.
 systemctl status octopi-buster docker
 docker ps -a
 docker volume ls
-docker compose -f /etc/nixos/containers/octoprint/compose.primary.yaml ps
+docker compose -f /etc/nixos/containers/octoprint/compose.yaml ps
 docker compose -f /etc/nixos/containers/telegram/compose.yaml ps
 ```
 
 To apply reviewed Compose changes, use the relevant project directory and
 `docker compose up -d`; use `docker compose up -d --build` for Telegram code or
-Dockerfile changes. For OctoPrint specify `-f compose.primary.yaml`. These
+Dockerfile changes. These
 commands may recreate containers: do not do that during a print. Never use
 `down -v` as routine cleanup; it removes named volumes.
 
