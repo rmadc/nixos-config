@@ -1,0 +1,34 @@
+// Practice pipeline for the Jenkins lab. See README.md.
+pipeline {
+  agent any
+
+  stages {
+    stage('Build') {
+      steps {
+        sh 'echo "hello" > message.txt'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'grep hello message.txt'
+      }
+    }
+    stage('Report') {
+      steps {
+        sh 'cat message.txt'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'All stages passed'
+    }
+    failure {
+      echo 'Something failed'
+    }
+    always {
+      echo 'This runs either way'
+    }
+  }
+}

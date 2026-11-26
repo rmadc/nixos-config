@@ -1,0 +1,15 @@
+# Jenkins for practice, on INTELi7 with Docker Desktop.
+name: jenkins-lab
+
+services:
+  jenkins:
+    image: jenkins/jenkins:2.580.2-lts-jdk21
+    ports:
+      # Reachable only from this machine.
+      - "127.0.0.1:8080:8080"
+    volumes:
+      # Jobs, plugins, users and build history.
+      - jenkins-home:/var/jenkins_home
+
+volumes:
+  jenkins-home:
