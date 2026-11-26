@@ -1,11 +1,14 @@
 // Practice pipeline for the Jenkins lab. See README.md.
 pipeline {
   agent any
+parameters {
+  string(name: 'GREETING', defaultValue: 'hello', description: 'Text to write')
+}
 
   stages {
     stage('Build') {
       steps {
-        sh 'echo "hello" > message.txt'
+        sh 'echo "$GREETING" > message.txt'
       }
     }
     stage('Test') {
