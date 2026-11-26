@@ -16,10 +16,18 @@ parameters {
         sh 'grep hello message.txt'
       }
     }
+    stage('Secret') {
+      environment {
+        TOKEN = credentials('practice-token')
+      }
+      steps {
+        sh 'echo "Token is $TOKEN"'
+      }
+    }
     stage('Approve') {
       steps {
         input message: 'Continue to Report?', ok: 'Continue'
-      }
+    }
     }
     stage('Report') {
       steps {
