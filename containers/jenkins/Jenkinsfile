@@ -16,6 +16,11 @@ parameters {
         sh 'grep hello message.txt'
       }
     }
+    stage('Approve') {
+      steps {
+        input message: 'Continue to Report?', ok: 'Continue'
+      }
+    }
     stage('Report') {
       steps {
         sh 'cat message.txt'
