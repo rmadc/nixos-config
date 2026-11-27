@@ -1,14 +1,11 @@
 // Practice pipeline for the Jenkins lab. See README.md.
 pipeline {
   agent { label 'practice' }
-parameters {
-  string(name: 'GREETING', defaultValue: 'hello', description: 'Text to write')
-}
 
   stages {
     stage('Build') {
       steps {
-        sh 'echo "$GREETING" > message.txt'
+        sh 'echo "hello" > message.txt'
       }
     }
     stage('Test') {
@@ -42,7 +39,7 @@ parameters {
 
   post {
     success {
-      echo 'All stages passed'
+      echo 'All goody good!'
     }
     failure {
       echo 'Something failed'
