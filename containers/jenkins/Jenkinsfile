@@ -25,18 +25,19 @@ parameters {
       }
     }
    // stage('Approve') {
+   //   when { branch 'main' }
    //   steps {
    //     input message: 'Continue to Report?', ok: 'Continue'
    //   }
    // }
-   //   when { branch 'main' }
+
     stage('Report') {
+      when { branch 'main' }
       steps {
         sh 'cat message.txt'
         archiveArtifacts artifacts: 'message.txt'
       }
-    }
-    when { branch 'main' }
+    }    
   }
 
   post {
