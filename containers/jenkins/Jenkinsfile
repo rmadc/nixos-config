@@ -42,7 +42,7 @@ parameters {
 
   post {
     success {
-      echo 'All stages passed'
+      echo 'All goody good!'
     }
     failure {
       echo 'Something failed'
