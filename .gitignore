@@ -1,3 +1,6 @@
 # Links created by `nix build` and `nixos-rebuild build`.
 result
 result-*
+.env
+start_sd_recovery.ps1
+sd_recovery_image.py

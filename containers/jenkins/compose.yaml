@@ -10,6 +10,13 @@ services:
     volumes:
       # Jobs, plugins, users and build history.
       - jenkins-home:/var/jenkins_home
-
+  agent:
+    image: jenkins/inbound-agent:3396.ve02b_5cde31b_2-5-jdk21
+    environment:
+      JENKINS_URL: http://jenkins:8080/
+      JENKINS_AGENT_NAME: practice-agent
+      JENKINS_SECRET: ${AGENT_SECRET}
+      JENKINS_AGENT_WORKDIR: /home/jenkins/agent
+      JENKINS_WEB_SOCKET: "true"
 volumes:
   jenkins-home:

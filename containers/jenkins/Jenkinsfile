@@ -1,6 +1,6 @@
 // Practice pipeline for the Jenkins lab. See README.md.
 pipeline {
-  agent any
+  agent { label 'practice' }
 parameters {
   string(name: 'GREETING', defaultValue: 'hello', description: 'Text to write')
 }
@@ -24,11 +24,11 @@ parameters {
         sh 'echo "Token is $TOKEN"'
       }
     }
-    stage('Approve') {
-      steps {
-        input message: 'Continue to Report?', ok: 'Continue'
-    }
-    }
+   // stage('Approve') {
+   //   steps {
+   //     input message: 'Continue to Report?', ok: 'Continue'
+   // }
+   // }
     stage('Report') {
       steps {
         sh 'cat message.txt'
