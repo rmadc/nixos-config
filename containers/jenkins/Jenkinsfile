@@ -27,14 +27,16 @@ parameters {
    // stage('Approve') {
    //   steps {
    //     input message: 'Continue to Report?', ok: 'Continue'
+   //   }
    // }
-   // }
+   //   when { branch 'main' }
     stage('Report') {
       steps {
         sh 'cat message.txt'
         archiveArtifacts artifacts: 'message.txt'
       }
     }
+    when { branch 'main' }
   }
 
   post {
