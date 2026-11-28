@@ -11,7 +11,7 @@ pipeline {
     stage('Test') {
       steps {
         sh '''
-          if grep goodbye message.txt; then
+          if grep hello message.txt; then
             result=""
           else
             result="<failure message='hello not found'/>"
