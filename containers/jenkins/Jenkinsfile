@@ -10,7 +10,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'grep goodbye message.txt'
+        sh 'grep hello message.txt'
       }
     }
     stage('Secret') {
