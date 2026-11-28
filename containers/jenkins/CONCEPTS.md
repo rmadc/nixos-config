@@ -66,6 +66,30 @@ Jenkins sends each result to GitHub as a commit status. A GitHub ruleset can
 require that status before merging. A passing check covers only what the
 pipeline ran.
 
+## Parallel stages
+
+Stages inside `parallel` run at the same time. The following stage waits for all
+of them. A stage has either `steps` or `parallel`, not both.
+
+```groovy
+stage('Checks') {
+  parallel {
+    stage('Lint') {
+      steps { sh './lint.sh' }
+    }
+    stage('Test') {
+      steps { sh './test.sh' }
+    }
+  }
+}
+```
+
+By default, one failing branch does not stop the others, so one build reports
+all their problems. With `failFast true`, the first failure aborts the rest.
+
+With the agent declared for the whole pipeline, as here, the branches share one
+workspace. Do not let them write the same files.
+
 ## Running a stage only on some branches
 
 `when` goes inside the stage. `branch` works in multibranch pipelines.

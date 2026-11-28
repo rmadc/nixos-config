@@ -4,29 +4,34 @@ pipeline {
   agent { label 'practice' }
 
   stages {
-    stage('Check scripts') {
-      steps {
-        // Every shell script tracked by Git. If none is found, ShellCheck
-        // gets no files and fails, so the check cannot pass without checking.
-        sh "git ls-files -z -- '*.sh' | xargs -0 shellcheck"
-      }
-    }
+    stage('Checks') {
+      parallel {
+        stage('Check scripts') {
+          steps {
+            // Every shell script tracked by Git. If none is found, ShellCheck
+            // gets no files and fails, so the check cannot pass without checking.
+            sh "git ls-files -z -- '*.sh' | xargs -0 shellcheck"
+          }
+        }
 
-    stage('Lint Python') {
-      steps {
-        sh 'ruff check .'
-      }
-    }
-    stage('Unit tests') {
-      steps {
-        sh '''
-          rm -f results.xml
-          pytest -p no:cacheprovider --junitxml=results.xml containers/telegram/tests || [ "$?" -eq 1 ]
-        '''
-      }
-      post {
-        always {
-          junit 'results.xml'
+        stage('Lint Python') {
+          steps {
+            sh 'ruff check .'
+          }
+        }
+
+        stage('Unit tests') {
+          steps {
+            sh '''
+              rm -f results.xml
+              pytest -p no:cacheprovider --junitxml=results.xml containers/telegram/tests || [ "$?" -eq 1 ]
+            '''
+          }
+          post {
+            always {
+              junit 'results.xml'
+            }
+          }
         }
       }
     }
