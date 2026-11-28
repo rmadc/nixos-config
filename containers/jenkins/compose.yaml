@@ -3,7 +3,7 @@ name: jenkins-lab
 
 services:
   jenkins:
-    build: ./agent
+    image: jenkins/jenkins:2.580.2-lts-jdk21
     ports:
       # Reachable only from this machine.
       - "127.0.0.1:8080:8080"
