@@ -116,11 +116,14 @@ def main():
                     alert = "<b>❌ Mel UNBLOCK:</b> {} ({})".format(current_text, timestamp)
                 else:
                     alert = "<b>✅ Mel UNBLOCK:</b> {} ({})".format(current_text, timestamp)
+            if alert:
+                # Save the log progress first. alert_none keeps its old value,
+                # so if sending fails, the next run tries the alert again.
+                save_state(state)
+                client.send_message("me", alert, parse_mode="html")
+
             state["alert_none"] = current_none
             save_state(state)
-
-            if alert:
-                client.send_message("me", alert, parse_mode="html")
 
         except Exception as e:
             print("[{}] ERROR: {}".format(datetime.now(LOCAL_TZ).strftime("%Y-%m-%d %H:%M:%S"), str(e)))
