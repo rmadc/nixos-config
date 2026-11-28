@@ -8,7 +8,7 @@ main() {
   fi
 
   local repo_dir host status revision
-  repo_dir=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+  repo_dir=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
   host=$(hostname -s)
 
   if [ -z "$host" ]; then
