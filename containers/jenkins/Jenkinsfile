@@ -17,5 +17,18 @@ pipeline {
         sh 'ruff check .'
       }
     }
+    stage('Unit tests') {
+      steps {
+        sh '''
+          rm -f results.xml
+          pytest -p no:cacheprovider --junitxml=results.xml containers/telegram/tests || [ "$?" -eq 1 ]
+        '''
+      }
+      post {
+        always {
+          junit 'results.xml'
+        }
+      }
+    }
   }
 }

@@ -69,7 +69,7 @@ def main():
     lock = open(LOCK_FILE, "a")
     try:
         fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except FileNotFoundError:
+    except BlockingIOError:
         return
 
     state = load_state()
