@@ -1,0 +1,6 @@
+# Rules checked by the Jenkins "Lint Python" stage.
+[lint]
+# Error-focused rules only, listed here so that Ruff's defaults, which can
+# change between versions, do not decide what is checked.
+# E4: imports, E7: statements, E9: syntax and runtime errors, F: Pyflakes.
+select = ["E4", "E7", "E9", "F"]

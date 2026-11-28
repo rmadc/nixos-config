@@ -6,9 +6,10 @@ A Jenkins controller and one build agent on INTELi7. It checks pull requests and
 | File | Contents |
 | --- | --- |
 | `compose.yaml` | Controller and agent containers |
-| `agent/Dockerfile` | Build tools available on the agent (ShellCheck) |
+| `agent/Dockerfile` | Build tools available on the agent (ShellCheck, Ruff) |
 | `Jenkinsfile` | The checks that run |
 | `.env.example` | Template for the untracked `.env` file |
+| [`ruff.toml`](../../ruff.toml) | Python lint rules, in the repository root |
 | [`CONCEPTS.md`](CONCEPTS.md) | Reminder of the Jenkins concepts practised here |
 
 Run the commands below from this directory.
