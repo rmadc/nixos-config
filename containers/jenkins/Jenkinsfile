@@ -10,7 +10,19 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'grep hello message.txt'
+        sh '''
+          if grep hello message.txt; then
+            result=""
+          else
+            result="<failure message='hello not found'/>"
+          fi
+          echo "<testsuite name='lab'><testcase classname='lab' name='message_has_hello'>$result</testcase></testsuite>" > results.xml
+        '''
+      }
+      post {
+        always {
+          junit 'results.xml'
+        }
       }
     }
     stage('Secret') {
