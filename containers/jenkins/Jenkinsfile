@@ -27,7 +27,7 @@ pipeline {
     }
     stage('Check scripts') {
       steps {
-        sh 'bash -n scripts/deploy.sh'
+        sh 'shellcheck scripts/deploy.sh'
       }
     }
     stage('Secret') {
