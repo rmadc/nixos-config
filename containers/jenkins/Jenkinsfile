@@ -1,68 +1,15 @@
-// Practice pipeline for the Jenkins lab. See README.md.
+// Checks for pull requests and for main. See README.md.
+// Nothing here deploys.
 pipeline {
   agent { label 'practice' }
 
   stages {
-    stage('Build') {
-      steps {
-        sh 'echo "hello" > message.txt'
-      }
-    }
-    stage('Test') {
-      steps {
-        sh '''
-          if grep hello message.txt; then
-            result=""
-          else
-            result="<failure message='hello not found'/>"
-          fi
-          echo "<testsuite name='lab'><testcase classname='lab' name='message_has_hello'>$result</testcase></testsuite>" > results.xml
-        '''
-      }
-      post {
-        always {
-          junit 'results.xml'
-        }
-      }
-    }
     stage('Check scripts') {
       steps {
-        sh 'shellcheck scripts/deploy.sh'
+        // Every shell script tracked by Git. If none is found, ShellCheck
+        // gets no files and fails, so the check cannot pass without checking.
+        sh "git ls-files -z -- '*.sh' | xargs -0 shellcheck"
       }
-    }
-    stage('Secret') {
-      environment {
-        TOKEN = credentials('practice-token')
-      }
-      steps {
-        sh 'echo "Token is $TOKEN"'
-      }
-    }
-   // stage('Approve') {
-   //   when { branch 'main' }
-   //   steps {
-   //     input message: 'Continue to Report?', ok: 'Continue'
-   //   }
-   // }
-
-    stage('Report') {
-      when { branch 'main' }
-      steps {
-        sh 'cat message.txt'
-        archiveArtifacts artifacts: 'message.txt'
-      }
-    }    
-  }
-
-  post {
-    success {
-      echo 'All goody good!'
-    }
-    failure {
-      echo 'Something failed'
-    }
-    always {
-      echo 'This runs either way'
     }
   }
 }

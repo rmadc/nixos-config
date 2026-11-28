@@ -1,22 +1,27 @@
-# Jenkins for practice, on INTELi7 with Docker Desktop.
+# Jenkins lab on INTELi7 with Docker Desktop. See README.md.
 name: jenkins-lab
 
 services:
+  # Controller: web interface, jobs and credentials.
   jenkins:
     image: jenkins/jenkins:2.580.2-lts-jdk21
     ports:
       # Reachable only from this machine.
       - "127.0.0.1:8080:8080"
     volumes:
-      # Jobs, plugins, users and build history.
+      # Jobs, plugins, users, credentials and build history.
       - jenkins-home:/var/jenkins_home
+
+  # Agent: runs the builds. Its tools are defined in agent/Dockerfile.
   agent:
     build: ./agent
     environment:
       JENKINS_URL: http://jenkins:8080/
       JENKINS_AGENT_NAME: practice-agent
+      # Read from the untracked .env file. See .env.example.
       JENKINS_SECRET: ${AGENT_SECRET}
       JENKINS_AGENT_WORKDIR: /home/jenkins/agent
       JENKINS_WEB_SOCKET: "true"
+
 volumes:
   jenkins-home:

@@ -1,12 +1,29 @@
-# Jenkins practice lab
+# Jenkins lab
 
-One Jenkins container on INTELi7, for learning. It is not connected to any other
-host and deploys nothing. Run the commands from this directory.
+A Jenkins controller and one build agent on INTELi7. It checks pull requests and
+`main` of this repository and reports the result to GitHub. It deploys nothing.
 
-## Start
+| File | Contents |
+| --- | --- |
+| `compose.yaml` | Controller and agent containers |
+| `agent/Dockerfile` | Build tools available on the agent (ShellCheck) |
+| `Jenkinsfile` | The checks that run |
+| `.env.example` | Template for the untracked `.env` file |
+
+Run the commands below from this directory.
+
+## What is not in Git
+
+Only the files above are in Git. Jobs, plugins, users and credentials are set up
+in the web interface and stored in the `jenkins-home` volume. The agent secret
+is in `.env`. Deleting the volume means repeating the setup below.
+
+## Set up from scratch
+
+### 1. Controller
 
 ```powershell
-docker compose up -d
+docker compose up -d jenkins
 ```
 
 Show the one-time password for the setup wizard:
@@ -18,59 +35,97 @@ docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 Open <http://localhost:8080>, enter that password, choose **Install suggested
 plugins** and create your admin user.
 
-## Exercise 1: hello world
+### 2. Agent
 
-1. Select **New Item**, name it `hello`, choose **Freestyle project** and
-   confirm.
-2. Under **Build Steps**, add **Execute shell** with:
+1. Under **Manage Jenkins** > **Nodes**, select **New Node**. Name it
+   `practice-agent`, choose **Permanent Agent** and set:
+   - Remote root directory: `/home/jenkins/agent`
+   - Labels: `practice`
+   - Launch method: **Launch agent by connecting it to the controller**
+   - **Use WebSocket**, if the option is shown
+2. Copy `.env.example` to `.env` and replace `replace-me` with the secret shown
+   on the node's page. Do not commit it: the repository is public.
+3. Build and start the agent:
 
-   ```sh
-   echo "Hello from Jenkins"
-   whoami
-   pwd
+   ```powershell
+   docker compose up -d --build agent
    ```
 
-3. Save, then select **Build Now**.
-4. Open the build in **Build History** and read its **Console Output**.
+4. Check that the node is online. Then set the number of executors of the
+   built-in node to `0`, so that builds cannot run on the controller.
 
-The commands run inside the Linux container, not in Windows.
+### 3. GitHub token
 
-Jenkins warns about running builds on the built-in node. That is acceptable for
-this practice with your own commands. In a real setup, builds run on separate
-agents, because a job on the built-in node can access Jenkins' own files.
+On GitHub, create a fine-grained personal access token limited to this
+repository, with an expiry date and these repository permissions:
 
-## Exercise 2: first pipeline
+| Permission | Access |
+| --- | --- |
+| Contents | Read-only |
+| Pull requests | Read-only |
+| Commit statuses | Read and write |
 
-1. Select **New Item**, name it `hello-pipeline`, choose **Pipeline** and
-   confirm.
-2. Under **Pipeline**, keep **Pipeline script** and paste the contents of
-   [`Jenkinsfile`](Jenkinsfile).
-3. Select **Build Now** and read the **Console Output**.
-4. In the `Test` stage, change `grep hello` to `grep goodbye` and build again.
-   `grep` returns a non-zero exit code, so `Test` fails and `Report` is skipped.
-   Compare which `post` messages appear.
-5. Restore `grep hello`.
+In Jenkins, under **Manage Jenkins** > **Credentials** > **System** > **Global**,
+add it as **Username with password**: username `rmadc`, the token as the
+password and ID `github-token`.
 
-## Exercise 3: pipeline from Git
+When the token expires, create or regenerate it and update the password of that
+credential. A `403` when updating a commit status, shown in the build log, means
+the token lacks permission.
 
-Jenkins reads the `Jenkinsfile` from GitHub, so it must be committed and pushed.
+### 4. Job
 
-1. Open `hello-pipeline` and select **Configure**.
-2. Under **Pipeline**, change the definition to **Pipeline script from SCM**:
-   - SCM: **Git**
-   - Repository URL: `https://github.com/rmadc/nixos-config.git`
-   - Branch Specifier: `*/main`
-   - Script Path: `containers/jenkins/Jenkinsfile`
-3. Save and select **Build Now**. No credentials are needed while the
-   repository is public.
+Create a **Multibranch Pipeline** named `hello-github`:
 
-The console shows Jenkins fetching the repository and the commit it checked out.
+- Branch source: **GitHub**, credentials `github-token`, repository
+  `https://github.com/rmadc/nixos-config.git`
+- Under **Behaviours**, delete **Discover pull requests from forks**. Anyone can
+  fork a public repository, and their code must not run on this machine.
+- Script path: `containers/jenkins/Jenkinsfile`
+- Scan triggers: **Periodically if not otherwise run**, 2 minutes
 
-To see the effect of a change, edit the `Jenkinsfile`, commit, push and build
-again. An edit that is not pushed has no effect on the build. This lab has no
-automatic trigger yet, so start each build with **Build Now**.
+Jenkins polls because GitHub cannot reach `localhost` with a webhook.
 
-## Stop and resume
+### 5. Protect `main`
+
+On GitHub, under **Settings** > **Rules** > **Rulesets**, create a branch ruleset
+for the default branch:
+
+- **Require a pull request before merging**, with 0 required approvals
+- **Require status checks to pass**, with the check
+  `continuous-integration/jenkins/pr-head`
+
+Merging then needs this lab to be running. If it cannot run, the ruleset can be
+disabled temporarily.
+
+## Make a change
+
+1. Switch to `main` and pull.
+2. Create a branch, make the change, commit and publish the branch.
+3. Open a pull request. Jenkins finds it at the next scan.
+4. Merge when the check has passed. The **Details** link of the check opens the
+   build, and only works on INTELi7.
+5. Delete the branch, then switch to `main` and pull.
+
+The check tests the branch as it is, not combined with newer commits on `main`.
+If `main` has changed, update the branch before merging.
+
+A passing check covers only what the `Jenkinsfile` runs. It does not validate
+the Compose files or the NixOS configurations. Review changes to the
+`Jenkinsfile` carefully, because a pull request can change its own checks.
+
+## Add a tool to the agent
+
+Add it to `agent/Dockerfile`, then rebuild while no build is running:
+
+```powershell
+docker compose up -d --build agent
+```
+
+Do this before pushing a `Jenkinsfile` that needs the tool. Package versions are
+not pinned, and a cached build step does not fetch newer versions.
+
+## Operate
 
 ```powershell
 docker compose stop
@@ -80,6 +135,12 @@ docker compose stop
 docker compose start
 ```
 
-The container does not start by itself after a restart. `docker compose down`
-removes the container but keeps the `jenkins-home` volume. Adding `-v` also
-deletes the volume, with all jobs and users.
+The containers do not start by themselves after a restart. `docker compose down`
+removes the containers but keeps the `jenkins-home` volume. Adding `-v` also
+deletes the volume, with all jobs, users and credentials.
+
+Before applying a change to `compose.yaml`, preview which containers it affects:
+
+```powershell
+docker compose up -d --dry-run
+```

@@ -29,6 +29,13 @@ time zone, enables NetworkManager, SSH and flakes, and installs Git.
 headroom during memory peaks but adds no physical memory. Check it with
 `swapon --show` or `zramctl`.
 
+## Making changes
+
+`main` is protected: make changes on a branch and merge them through a pull
+request. Jenkins must report a passing check first. See the
+[Jenkins lab](containers/jenkins/README.md), including what the check does not
+cover.
+
 ## First checkout
 
 On a host where `/etc/nixos` does **not** already exist, clone the repository:
