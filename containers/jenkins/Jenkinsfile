@@ -25,6 +25,11 @@ pipeline {
         }
       }
     }
+    stage('Check scripts') {
+      steps {
+        sh 'bash -n scripts/deploy.sh'
+      }
+    }
     stage('Secret') {
       environment {
         TOKEN = credentials('practice-token')
