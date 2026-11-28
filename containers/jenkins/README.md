@@ -9,6 +9,7 @@ A Jenkins controller and one build agent on INTELi7. It checks pull requests and
 | `agent/Dockerfile` | Build tools available on the agent (ShellCheck) |
 | `Jenkinsfile` | The checks that run |
 | `.env.example` | Template for the untracked `.env` file |
+| [`CONCEPTS.md`](CONCEPTS.md) | Reminder of the Jenkins concepts practised here |
 
 Run the commands below from this directory.
 
