@@ -3,6 +3,12 @@
 A Jenkins controller and one build agent on INTELi7. It checks pull requests and
 `main` of this repository and reports the result to GitHub. It deploys nothing.
 
+For `main`, it also keeps a package of the Telegram jobs with the build, under
+**Build Artifacts**: an archive made from the commit, without the tests, plus
+`COMMIT` (the source commit), `FILES.sha256` (a hash of each packaged file) and
+a hash of the archive. To check unpacked files, run
+`sha256sum -c /path/to/FILES.sha256` from the folder they were unpacked into.
+
 | File | Contents |
 | --- | --- |
 | `compose.yaml` | Controller and agent containers |

@@ -174,8 +174,18 @@ An artifact is a file kept with a particular build, such as a package or a
 report.
 
 ```groovy
-archiveArtifacts artifacts: 'dist/*'
+archiveArtifacts artifacts: 'dist/*', fingerprint: true
 ```
+
+`fingerprint` records a checksum, so that Jenkins can tell which builds
+produced or used the same file.
+
+- The workspace can still hold files from an earlier build. Empty the output
+  folder before filling it, or old files get archived too.
+- A package should say where it came from, for example with the commit ID and
+  file hashes.
+- `git archive` packages files as they are in a commit, so untracked files such
+  as `.env` are left out.
 
 ## Test reports
 
