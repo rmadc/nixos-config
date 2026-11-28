@@ -47,3 +47,61 @@ def test_second_run_exits_quietly_while_locked(job):
     with open(job.LOCK_FILE, "a") as other_run:
         fcntl.flock(other_run.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         job.main()
+
+class FakeClient:
+    """Stands in for TelegramClient. A status of None raises the alert."""
+
+    def __init__(self, fail_send=False):
+        self.fail_send = fail_send
+        self.sent = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        return False
+
+    def get_entity(self, user_id):
+        return types.SimpleNamespace(status=None)
+
+    def send_message(self, *args, **kwargs):
+        if self.fail_send:
+            raise ConnectionError("send failed")
+        self.sent.append(args)
+
+
+def run_job(job, monkeypatch, client):
+    monkeypatch.setattr(job, "TelegramClient", lambda *args: client)
+    job.main()
+    return client
+
+
+def previous_run_saw_a_status(job):
+    job.save_state({**job.load_state(), "alert_none": False})
+
+
+def test_failed_alert_is_sent_on_the_next_run(job, monkeypatch):
+    previous_run_saw_a_status(job)
+    run_job(job, monkeypatch, FakeClient(fail_send=True))
+
+    retry = run_job(job, monkeypatch, FakeClient())
+
+    assert len(retry.sent) == 1
+
+
+def test_sent_alert_is_not_repeated(job, monkeypatch):
+    previous_run_saw_a_status(job)
+    first = run_job(job, monkeypatch, FakeClient())
+
+    second = run_job(job, monkeypatch, FakeClient())
+
+    assert len(first.sent) == 1
+    assert second.sent == []
+
+
+def test_retry_does_not_duplicate_log_entries(job, monkeypatch):
+    previous_run_saw_a_status(job)
+    run_job(job, monkeypatch, FakeClient(fail_send=True))
+    run_job(job, monkeypatch, FakeClient())
+
+    assert len(Path(job.LOG_FILE).read_text().splitlines()) == 1
