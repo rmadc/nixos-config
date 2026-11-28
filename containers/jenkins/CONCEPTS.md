@@ -154,6 +154,18 @@ stage('Approve') {
 
 The build waits. Aborting it skips the following stages and ends as `ABORTED`.
 
+With the agent declared for the whole pipeline, a waiting build keeps its
+executor, and other builds may queue behind it. Limit the wait:
+
+```groovy
+stage('Approve') {
+  options { timeout(time: 10, unit: 'MINUTES') }
+  steps {
+    input message: 'Deploy?', ok: 'Deploy'
+  }
+}
+```
+
 ## Credentials
 
 Store the secret in Jenkins and refer to it by ID. Only the ID goes into Git.
