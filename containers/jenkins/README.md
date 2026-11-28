@@ -6,10 +6,11 @@ A Jenkins controller and one build agent on INTELi7. It checks pull requests and
 | File | Contents |
 | --- | --- |
 | `compose.yaml` | Controller and agent containers |
-| `agent/Dockerfile` | Build tools available on the agent (ShellCheck, Ruff) |
+| `agent/Dockerfile` | Build tools available on the agent (ShellCheck, Ruff, pytest) |
 | `Jenkinsfile` | The checks that run |
 | `.env.example` | Template for the untracked `.env` file |
 | [`ruff.toml`](../../ruff.toml) | Python lint rules, in the repository root |
+| [`../telegram/tests/`](../telegram/tests/) | Unit tests for the Telegram jobs; they use no real Telegram account |
 | [`CONCEPTS.md`](CONCEPTS.md) | Reminder of the Jenkins concepts practised here |
 
 Run the commands below from this directory.
@@ -99,6 +100,31 @@ for the default branch:
 
 Merging then needs this lab to be running. If it cannot run, the ruleset can be
 disabled temporarily.
+
+## Test before pushing
+
+The dev container in [`.devcontainer/`](../../.devcontainer/) provides Git,
+ShellCheck, Ruff and pytest. It needs Docker Desktop and the VS Code **Dev
+Containers** extension. Open the repository in VS Code and run **Dev Containers:
+Reopen in Container**. After changing its files, run **Dev Containers: Rebuild
+Container**.
+
+In the container's terminal, from the repository root:
+
+```sh
+git ls-files -z -- '*.sh' | xargs -0 shellcheck
+ruff check .
+pytest containers/telegram/tests
+```
+
+New shell scripts are checked only once Git tracks them.
+
+The dev container uses Python 3.11, like the Telegram job images. The agent has
+its own Python version and its own tool installation, so Jenkins remains the
+check that decides whether a pull request can be merged.
+
+The whole repository folder is visible inside the dev container, including
+untracked files such as `.env`.
 
 ## Make a change
 

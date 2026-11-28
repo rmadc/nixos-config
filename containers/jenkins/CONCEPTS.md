@@ -177,6 +177,17 @@ For the report to mark a build `UNSTABLE`, the test command must not already
 have failed the step. Many test tools exit with a non-zero code when a test
 fails, which gives `FAILURE` unless the pipeline handles it.
 
+pytest exits with `1` when tests fail and with other non-zero codes when it
+cannot run them properly. This accepts only `1`, and leaves the verdict to the
+report:
+
+```groovy
+sh '''
+  rm -f results.xml
+  pytest --junitxml=results.xml path/to/tests || [ "$?" -eq 1 ]
+'''
+```
+
 ## Reviewing a pull request
 
 - Check the result for the latest commit, and read the changes.

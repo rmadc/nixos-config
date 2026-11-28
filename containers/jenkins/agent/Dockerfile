@@ -6,9 +6,9 @@ USER root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends shellcheck python3-venv \
     && rm -rf /var/lib/apt/lists/* \
-    && python3 -m venv /opt/ruff \
-    && /opt/ruff/bin/pip install --no-cache-dir ruff \
-    && ln -s /opt/ruff/bin/ruff /usr/local/bin/ruff
+    && python3 -m venv /opt/tools \
+    && /opt/tools/bin/pip install --no-cache-dir ruff pytest \
+    && ln -s /opt/tools/bin/ruff /opt/tools/bin/pytest /usr/local/bin/
 
 # Run builds as the unprivileged user again.
 USER jenkins
