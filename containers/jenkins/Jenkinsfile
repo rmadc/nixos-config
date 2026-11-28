@@ -11,5 +11,11 @@ pipeline {
         sh "git ls-files -z -- '*.sh' | xargs -0 shellcheck"
       }
     }
+
+    stage('Lint Python') {
+      steps {
+        sh 'ruff check .'
+      }
+    }
   }
 }
