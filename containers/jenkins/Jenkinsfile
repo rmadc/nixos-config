@@ -35,5 +35,25 @@ pipeline {
         }
       }
     }
+
+    stage('Package') {
+      when { branch 'main' }
+      steps {
+        sh '''
+          mkdir -p dist
+          rm -f dist/*
+          name="telegram-jobs-$(git rev-parse --short HEAD).tar.gz"
+
+          # Package files as committed, without the tests.
+          git archive --format=tar.gz --output="dist/$name" HEAD -- containers/telegram ':(exclude)containers/telegram/tests'
+
+          # Record the source commit and the hashes.
+          git rev-parse HEAD > dist/COMMIT
+          git ls-files -z -- containers/telegram ':(exclude)containers/telegram/tests' | xargs -0 sha256sum > dist/FILES.sha256
+          (cd dist && sha256sum "$name" > "$name.sha256")
+        '''
+        archiveArtifacts artifacts: 'dist/*', fingerprint: true
+      }
+    }
   }
 }
