@@ -9,6 +9,12 @@ For `main`, it also keeps a package of the Telegram jobs with the build, under
 a hash of the archive. To check unpacked files, run
 `sha256sum -c /path/to/FILES.sha256` from the folder they were unpacked into.
 
+After packaging, the `main` build waits up to 10 minutes for approval, then
+simulates a deployment: it verifies the package and unpacks it into a folder in
+the workspace. No host is contacted. While it waits, it occupies the agent's
+executor, so with one executor other builds queue behind it. Aborting, or
+letting the time run out, ends the build as aborted.
+
 | File | Contents |
 | --- | --- |
 | `compose.yaml` | Controller and agent containers |

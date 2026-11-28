@@ -55,5 +55,42 @@ pipeline {
         archiveArtifacts artifacts: 'dist/*', fingerprint: true
       }
     }
+
+    stage('Approve') {
+      when { branch 'main' }
+      // A waiting build keeps its executor, so do not wait forever.
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps {
+        input message: 'Simulate deployment of this package?', ok: 'Deploy'
+      }
+    }
+
+    stage('Deploy (simulation)') {
+      when { branch 'main' }
+      steps {
+        sh '''
+          # A folder in the workspace stands in for the target host.
+          rm -rf fake-target
+          mkdir fake-target
+          (cd dist && sha256sum -c ./*.tar.gz.sha256)
+          tar -xzf dist/*.tar.gz -C fake-target
+          (cd fake-target && sha256sum --quiet -c ../dist/FILES.sha256)
+          cp dist/COMMIT fake-target/COMMIT
+          echo "Simulated deployment of commit $(cat fake-target/COMMIT)"
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Pipeline passed.'
+    }
+    aborted {
+      echo 'Pipeline was aborted before finishing.'
+    }
+    failure {
+      echo 'Pipeline failed.'
+    }
   }
 }
